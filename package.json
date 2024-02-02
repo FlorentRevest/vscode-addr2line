@@ -1,0 +1,57 @@
+{
+	"name": "addr2line",
+	"displayName": "Address to line terminal link provider",
+	"description": "Lets users resolve addresses in the terminal such as in kernel backtraces to file and lines",
+	"publisher": "florent-revest",
+	"license": "MIT",
+	"version": "0.0.1",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/FlorentRevest/vscode-addr2line.git"
+	},
+	"engines": {
+		"vscode": "^1.59.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onStartupFinished"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"configuration": {
+			"title": "addr2line",
+			"properties": {
+				"addr2line.target": {
+					"type": "string",
+					"default": "vmlinux",
+					"description": "Binary file to resolve addresses against."
+				},
+				"addr2line.command": {
+					"type": "string",
+					"default": "addr2line",
+					"description": "addr2line command to use, e.g: llvm-addr2line"
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile && npm run lint",
+		"lint": "eslint src --ext ts"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.1.3",
+		"@types/node": "^12.11.7",
+		"@types/vscode": "^1.59.0",
+		"@typescript-eslint/eslint-plugin": "^4.14.1",
+		"@typescript-eslint/parser": "^4.14.1",
+		"eslint": "^7.19.0",
+		"glob": "^7.1.6",
+		"typescript": "^4.8.2",
+		"vscode-test": "^1.5.0"
+	}
+}
