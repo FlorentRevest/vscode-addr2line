@@ -1,12 +1,10 @@
 import * as vscode from "vscode";
 import * as cp from "child_process";
-import fs = require("fs");
+import * as path from 'path';
+import * as fs from 'fs';
 
 // Given a /path/to/file:1234 string, opens that in a text document
-function openFileLine(fileLine: string) {
-  const [file, lineStr] = fileLine.trim().split(":");
-  const line = parseInt(lineStr, 10);
-
+function openFileLine(file: string, line: number) {
   const uri = vscode.Uri.file(file);
   vscode.workspace.openTextDocument(uri).then((doc) => {
     vscode.window.showTextDocument(doc, {
@@ -130,21 +128,49 @@ export function activate(context: vscode.ExtensionContext) {
       .then((output) => {
         // If we got here, the addr2line resolution worked.
         // In the case of inlined code, it can return multiple lines of output
-        const lines = output.trim().split('\n');
-        // Each line is a file:line pattern but sometimes the line is unknown and is a ?
-        // Filter the unknown lines out
-        lines.filter((line) => !line.endsWith("?"));
+        const outputLines = output.trim().split('\n');
+
+        // Normalize addr2line's output into relative and absolute paths to the workspace
+        let relativeTo = "/";
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (workspaceFolders && workspaceFolders.length) {
+          relativeTo = workspaceFolders[0].uri.path;
+        }
+
+        const quickPickItems: vscode.QuickPickItem[] = [];
+        const realPaths: string[] = [];
+        const lines: number[] = [];
+        for (const outputLine of outputLines) {
+          // Extract the file path and line numbers
+          let [file, lineStr] = outputLine.trim().split(":");
+          let line = parseInt(lineStr, 10);
+          if (Number.isNaN(line)) {
+            line = 1;
+          }
+          lines.push(line);
+
+          // Resolve an absolute path
+          const realPath = path.resolve(relativeTo, file);
+          realPaths.push(realPath);
+          // And make it relative to the workspace
+          quickPickItems.push({
+            label: path.relative(relativeTo, realPath),
+            description: lineStr
+          });
+        }
+
         // If we are left with multiple choices, give the user a quick pick menu
-        if (lines.length > 1) {
-          vscode.window.showQuickPick(lines)
-            .then(selectedLine => {
-                if (selectedLine) {
-                    openFileLine(selectedLine);
+        if (quickPickItems.length > 1) {
+          vscode.window.showQuickPick(quickPickItems)
+            .then(selected => {
+                if (selected) {
+                    const selectedIndex = quickPickItems.indexOf(selected);
+                    openFileLine(realPaths[selectedIndex], lines[selectedIndex]);
                 }
             });
-        } else if (lines.length === 1) {
+        } else if (quickPickItems.length === 1) {
           // But if there's only one choice, just open it
-          openFileLine(lines[0]);
+          openFileLine(realPaths[0], lines[0]);
         }
       })
       .catch((error) => {
