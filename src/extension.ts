@@ -19,22 +19,18 @@ class Addr2Line {
 
   // Called on startup or when the target file is created/modified
   start(target: string): void {
-    if (this.process) {
+    if (this.process && this.process.exitCode === null) {
       this.process.kill(9);
     }
 
     const command: string = vscode.workspace.getConfiguration().get("addr2line.command")!;
     this.process = cp.spawn(command, ["-i", "-e", target]);
-    this.process.on('close', () => {
-      this.process = null;
-    });
   }
 
   // Typically called when the target file is deleted
   stop() {
-    if (this.process) {
+    if (this.process && this.process.exitCode === null) {
       this.process.kill(9);
-      this.process = null;
     }
   }
 
