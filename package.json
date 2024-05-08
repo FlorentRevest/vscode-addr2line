@@ -4,7 +4,7 @@
 	"description": "Lets users resolve addresses in the terminal such as in kernel backtraces to file and lines",
 	"publisher": "florent-revest",
 	"license": "MIT",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/FlorentRevest/vscode-addr2line.git"
