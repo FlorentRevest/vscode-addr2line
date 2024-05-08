@@ -93,7 +93,7 @@ export function activate(context: vscode.ExtensionContext) {
       if (fs.existsSync(absoluteTarget)) {
         addr2line.start(absoluteTarget);
 
-        targetWatcher = vscode.workspace.createFileSystemWatcher(absoluteTarget, false, false, true);
+        targetWatcher = vscode.workspace.createFileSystemWatcher(absoluteTarget, false, false, false);
         targetWatcher.onDidChange(() => addr2line.start(absoluteTarget));
         targetWatcher.onDidCreate(() => addr2line.start(absoluteTarget));
         targetWatcher.onDidDelete(() => addr2line.stop());
