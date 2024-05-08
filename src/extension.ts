@@ -92,13 +92,13 @@ export function activate(context: vscode.ExtensionContext) {
       // Start monitoring the target
       if (fs.existsSync(absoluteTarget)) {
         addr2line.start(absoluteTarget);
-
-        targetWatcher = vscode.workspace.createFileSystemWatcher(absoluteTarget, false, false, false);
-        targetWatcher.onDidChange(() => addr2line.start(absoluteTarget));
-        targetWatcher.onDidCreate(() => addr2line.start(absoluteTarget));
-        targetWatcher.onDidDelete(() => addr2line.stop());
       }
-    }
+
+      targetWatcher = vscode.workspace.createFileSystemWatcher(absoluteTarget, false, false, false);
+      targetWatcher.onDidChange(() => addr2line.start(absoluteTarget));
+      targetWatcher.onDidCreate(() => addr2line.start(absoluteTarget));
+      targetWatcher.onDidDelete(() => addr2line.stop());
+   }
   }
   monitorTarget();
   vscode.workspace.onDidChangeWorkspaceFolders(monitorTarget);
