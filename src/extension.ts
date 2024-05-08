@@ -108,7 +108,7 @@ export function activate(context: vscode.ExtensionContext) {
     provideTerminalLinks: (context: vscode.TerminalLinkContext, token: vscode.CancellationToken) => {
     // This regexp matches the sort of addresses typically found in kernel backtraces
     // e.g.: __sys_sendmsg+0x284/0x370
-    const regex = new RegExp(/[^+\ ]+\+0x[0-9a-f]+\/0x[0-9a-f]+/, 'g');
+    const regex = new RegExp(/[^+\ :]+\+0x[0-9a-f]+\/0x[0-9a-f]+/, 'g');
     const links: Addr2lineTerminalLink[] = [];
     const target: string = vscode.workspace.getConfiguration().get("addr2line.target")!;
     for (const match of context.line.matchAll(regex)) {
